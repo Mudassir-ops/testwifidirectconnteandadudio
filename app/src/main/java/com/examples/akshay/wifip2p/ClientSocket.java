@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,14 +19,21 @@ import java.net.Socket;
 
 public class ClientSocket extends AsyncTask {
     private static String data;
+    private static ByteArrayOutputStream outputStream1;
     private static final String TAG = "===ClientSocket";
     private Socket socket;
 
-    public ClientSocket(Context context, MainActivity activity, String data1) {
+    public ClientSocket(Context context, MainActivity activity, String data1, ByteArrayOutputStream outputStream) {
         //this.context = context;
         if (data1 != null) {
             data = data1;
         } else data = "null data";
+
+
+        if (outputStream != null) {
+            outputStream1 = outputStream;
+        } else outputStream1 = null;
+
 
     }
 
@@ -51,25 +59,18 @@ public class ClientSocket extends AsyncTask {
         byte buf[] = new byte[1024];
 
         try {
-            /**
-             * Create a client socket with the host,
-             * port, and timeout information.
-             */
+
             socket.bind(null);
             Log.d(ClientSocket.TAG, "Trying to connect...");
 
             socket.connect((new InetSocketAddress(host, port)), 500);
             Log.d(ClientSocket.TAG, "Connected...");
 
-
-            /**
-             * Create a byte stream from a JPEG file and pipe it to the output stream
-             * of the socket. This data will be retrieved by the server device.
-             */
             OutputStream outputStream = socket.getOutputStream();
+
             //ContentResolver cr = context.getContentResolver();
             InputStream inputStream = null;
-            inputStream = new ByteArrayInputStream(data.getBytes());
+            inputStream = new ByteArrayInputStream(outputStream1.toByteArray());
             while ((len = inputStream.read(buf)) != -1) {
                 outputStream.write(buf, 0, len);
             }

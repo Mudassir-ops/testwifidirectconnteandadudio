@@ -182,7 +182,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, ConnectionInfoLi
                 makeToast("peer discovery started")
 
             }
-
             override fun onFailure(i: Int) {
                 stateDiscovery = false
                 if (i == WifiP2pManager.P2P_UNSUPPORTED) {
@@ -344,7 +343,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, ConnectionInfoLi
             }
             R.id.main_activity_button_server_start -> {
                 serverSocketThread = ServerSocketThread()
-                serverSocketThread!!.setUpdateListener { obj -> setReceivedText(obj) }
+            //    serverSocketThread!!.setUpdateListener { obj -> setReceivedText(obj) }
                 serverSocketThread!!.execute()
             }
             R.id.main_activity_button_server_stop -> if (serverSocketThread != null) {
@@ -355,11 +354,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, ConnectionInfoLi
             R.id.main_activity_button_client_start -> {
                 //serviceDisvcoery.startRegistrationAndDiscovery(mManager,mChannel);
 
-
                 val dataToSend = editTextTextInput!!.text.toString()
                 //--power on echo 0x40 0x04
                 //--power off
-                val clientSocket = ClientSocket(this@MainActivity, this, dataToSend)
+                val clientSocket = ClientSocket(this@MainActivity, this, dataToSend,MicRecorder.outputStream)
                 clientSocket.execute()
             }
             R.id.main_activity_button_configure -> mManager!!.requestConnectionInfo(mChannel, this)
@@ -402,6 +400,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, ConnectionInfoLi
     }
 
     fun setReceivedText(data: String?) {
+        Log.d(TAG, "setReceivedText: %$data")
         runOnUiThread { textViewReceivedData!!.text = data }
     }
 
